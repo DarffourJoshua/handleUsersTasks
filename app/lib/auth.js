@@ -20,7 +20,7 @@ const authOptions = {
             },
             async authorize(credentials, req )   {
                 if (!credentials?.email || !credentials?.password) {
-                    throw new Error('Missing email or password');
+                    throw new Error('Enter a valid email or password');
                 }
                 console.log(email, password);
                 // Use absolute URL for server-side fetch calls

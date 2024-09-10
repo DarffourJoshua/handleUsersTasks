@@ -10,3 +10,5 @@ const deleteTask = async (id) => {
         console.error(error);
     }
 };
+
+export default deleteTask;

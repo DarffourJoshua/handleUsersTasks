@@ -4,13 +4,6 @@ import {is,object, string, assert, define, size} from 'superstruct';
 import isEmail from 'is-email';
 import prisma from '@/app/lib/client';
 
-// Function to exclude user password returned from prisma
-function exclude(user, keys) {
-    for (let key of keys) {
-      delete user[key];
-    }
-    return user;
-}
 
 const Email = define('Email', isEmail);
 
@@ -20,25 +13,33 @@ const signIn = object({
 })
 
 const POST = async (req) => {
-    const body = await req.json();
+    const {email, password} = await req.json();
 
     try {
-        assert(body, signIn);
-        if (is(body, signIn))  {
+        assert({email, password}, signIn);
+        if (is({email, password}, signIn))  {
             const user = await prisma.user.findUnique({
-                where: {email: body.email},
+                where: {email: email},
                 select: {
                     id: true,
                     email: true,
                     password: true
                 }
             });
-
-            if (user && comparePass(body.password, user.password))   {
-                return NextResponse.json(exclude(user, ["password"]));
-            }   else    {
-                return NextResponse.json({message: 'invalid credentials'})
+            console.log(user);
+            if (!user) {
+                return NextResponse.json({ message: 'Invalid email or password' }, { status: 401 });
             }
+    
+            // Compare the provided password with the stored hashed password
+            const isPasswordValid = comparePass(password, user.password);
+            if (!isPasswordValid) {
+                return NextResponse.json({ message: 'Invalid email or password' }, { status: 401 });
+            }
+    
+            // Success: Return user data (without the password)
+            return NextResponse.json({ user: { id: user.id, email: user.email } });
+              
         }
     }   catch(e)   {
         //throw new Error(e);

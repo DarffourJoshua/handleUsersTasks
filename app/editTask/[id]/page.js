@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { useMutation } from "@tanstack/react-query";
-import postTask from "../lib/postTask";
+import postTask from "../../lib/postTask";
 
 const EditTask = () => {
     const [task, setTask] = useState({

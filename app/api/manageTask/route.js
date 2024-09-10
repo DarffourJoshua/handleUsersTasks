@@ -23,14 +23,8 @@ const  DELETE = async (req) => {
 }
 
 // Handle GET requests (Read)
-const GET = async (req) => {
-    //const {title, description} = await req.json();
-
-    const todos = await prisma.task.findMany({
-        title: true,
-        description: true,
-        createdAt: true
-    });
+const GET = async () => {
+    const todos = await prisma.task.findMany();
     return NextResponse.json({todos});
 }
 
